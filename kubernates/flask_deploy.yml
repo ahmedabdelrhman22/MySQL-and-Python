@@ -17,11 +17,16 @@ spec:
     spec:
       containers:
         - name: flaskapi
-          image: flask-api
+          image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/flask-app
           imagePullPolicy: Never
           ports:
             - containerPort: 5002
           env:
+            - name: AWS_ACCOUNT_ID
+              value: 422097883691
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            - name: MYSQL_ROOT_PASSWORD
             - name: db_root_password
               valueFrom:
                 secretKeyRef:

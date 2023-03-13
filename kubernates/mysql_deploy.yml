@@ -17,14 +17,19 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql
+        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/mysql-db
         imagePullPolicy: Never
         env:
+        - name: AWS_ACCOUNT_ID
+          value: 422097883691
+        - name: AWS_DEFAULT_REGION
+          value: us-east-1
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: secrets
               key: db_root_password
+        
         ports:
         - containerPort: 3306
           name: db-container
