@@ -12,7 +12,8 @@ stages {
             steps {
                 withAWS(credentials: 'sam-jenkins-demo-credentials', region: 'us-east-1'){
                 // withCredentials([string(credentialsId: 'foo', variable: 'secret')]){
-                    sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'                  
+                    sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
+                    echo 'logging to aws ECR successed'
                 }
                  
             }
@@ -21,18 +22,21 @@ stages {
     stage('Git clone') {
         steps{
             git branch: 'master', url: 'https://github.com/Alsafawagdy/MySQL-and-Python.git'
+            echo 'download files'
         }
     }
 
     stage('Build docker image Flask-app'){
         steps {
             sh 'docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/flask-app:v${BUILD_NUMBER} ./FlaskApp'
+            echo 'Build Flask-app image'
         }
     }
 
     stage('Build docker image MySQL-database'){
         steps {
             sh 'docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/mysql-db:v${BUILD_NUMBER} ./MySQL_Queries'
+            echo 'Build Mysql-db image'
          }
     }
 
@@ -41,6 +45,7 @@ stages {
             withAWS(credentials: 'alsafa-final-iam', region: ${AWS_DEFAULT_REGION}){
             // withCredentials([string(credentialsId: 'foo', variable: 'secret')]){
                 sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/flask-app:v${BUILD_NUMBER}'
+                echo 'Push Flask-app image'
             }
         }
     }
@@ -50,6 +55,7 @@ stages {
             withAWS(credentials: 'alsafa-final-iam', region: 'us-east-1'){
             // withCredentials([string(credentialsId: 'foo', variable: 'secret')]){
                 sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/mysql-db:v${BUILD_NUMBER}'
+                echo 'Push Mysql-db image'
             }
         }
     }
